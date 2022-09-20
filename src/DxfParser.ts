@@ -18,16 +18,21 @@ import Polyline from './entities/polyline.js';
 import Solid from './entities/solid.js';
 import Spline from './entities/spline.js';
 import Text from './entities/text.js';
+
+import MLine from './entities/mline.js';
+//import MLineStyle from './objects/mlinestyle.js';
+
 //import Vertex from './entities/.js';
 
 import log from 'loglevel';
 import IGeometry, { EntityName, IEntity, IPoint } from './entities/geomtry.js';
+import MLineStyle, { ObjectsName } from './objects/mlinestyle.js';
 
 //log.setLevel('trace');
 //log.setLevel('debug');
-//log.setLevel('info');
+log.setLevel('info');
 //log.setLevel('warn');
-log.setLevel('error');
+//log.setLevel('error');
 //log.setLevel('silent');
 
 export interface IBlock {
@@ -85,6 +90,8 @@ export interface ILineType {
 	patternLength: number;
 }
 
+
+
 export interface ILineTypeTableDefinition {
 	tableRecordsProperty: 'lineTypes';
 	tableName: 'lineType';
@@ -138,11 +145,21 @@ export interface ITables {
 
 export type ITable = IViewPortTable | ILayerTypesTable | ILayersTable;
 
+///TODO
+export interface IObject {
+	ForObjectName: ObjectsName;
+}
+
 export interface IDxf {
 	header: Record<string, IPoint | number>;
 	entities: IEntity[];
+	objects: IObject[];
 	blocks: Record<string, IBlock>;
 	tables: ITables;
+}
+
+function registerDefaultObjectHandlers(dxfParser: DxfParser){
+	dxfParser.registerObjectHandler(MLineStyle);
 }
 
 function registerDefaultEntityHandlers(dxfParser: DxfParser) {
@@ -163,13 +180,17 @@ function registerDefaultEntityHandlers(dxfParser: DxfParser) {
 	dxfParser.registerEntityHandler(Solid);
 	dxfParser.registerEntityHandler(Spline);
 	dxfParser.registerEntityHandler(Text);
-	//dxfParser.registerEntityHandler(require('./entities/vertex'));
+
+	dxfParser.registerEntityHandler(MLine);
 }
 
 export default class DxfParser {
 	private _entityHandlers = {} as Record<EntityName, IGeometry>;
+	private _objectHandlers = {} as Record<ObjectsName, IObject>;
+
 	constructor() {
 		registerDefaultEntityHandlers(this);
+		registerDefaultObjectHandlers(this);
 	}
 
 	public parse(source: string) {
@@ -184,6 +205,11 @@ export default class DxfParser {
 	public registerEntityHandler(handlerType: new () => IGeometry) {
 		const instance = new handlerType();
 		this._entityHandlers[instance.ForEntityName] = instance;
+	}
+
+	public registerObjectHandler(handlerType: new() => IObject){
+		const instance = new handlerType();
+		this._objectHandlers[instance.ForObjectName] = instance;
 	}
 
 	public parseSync(source: string) {
@@ -228,14 +254,12 @@ export default class DxfParser {
 			while (!scanner.isEOF()) {
 				if (curr.code === 0 && curr.value === 'SECTION') {
 					curr = scanner.next();
-
 					// Be sure we are reading a section code
 					if (curr.code !== 2) {
 						console.error('Unexpected code %s after 0:SECTION', debugCode(curr));
 						curr = scanner.next();
 						continue;
 					}
-
 					if (curr.value === 'HEADER') {
 						log.debug('> HEADER');
 						dxf.header = parseHeader();
@@ -247,6 +271,10 @@ export default class DxfParser {
 					} else if (curr.value === 'ENTITIES') {
 						log.debug('> ENTITIES');
 						dxf.entities = parseEntities(false);
+						log.debug('<');
+					} else if (curr.value === 'OBJECTS') {
+						log.debug('> ENTITIES');
+						//dxf.entities = parseEntities(false);
 						log.debug('<');
 					} else if (curr.value === 'TABLES') {
 						log.debug('> TABLES');
@@ -765,6 +793,18 @@ export default class DxfParser {
 			}
 		} as ITableDefinitions;
 
+		function parseObjects(){
+			const objects = [] as IObject[];
+			while(true){
+				if (curr.code === 0) {
+					if (curr.value === '') {
+						break;
+					}
+				}
+				const handler = self._objectsHandlers[curr.value as ObjectsName]
+			}
+		}
+
 		/**
 		 * Is called after the parser first reads the 0:ENTITIES group. The scanner
 		 * should be on the start of the first entity already.
@@ -784,6 +824,8 @@ export default class DxfParser {
 					if (curr.value === endingOnValue) {
 						break;
 					}
+
+					//console.log('code: ' + curr.code +'; value: ' + curr.value);
 
 					const handler = self._entityHandlers[curr.value as EntityName];
 					if (handler != null) {
