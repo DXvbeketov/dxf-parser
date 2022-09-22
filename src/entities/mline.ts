@@ -2,10 +2,10 @@ import * as helpers from '../ParseHelpers.js';
 import IGeometry, { IEntity, IPoint } from './geomtry.js';
 import DxfArrayScanner, { IGroup } from '../DxfArrayScanner.js';
 
-export interface IMLineEntity extends IEntity{
+export interface IMLineEntity extends IEntity {
 	styleName: string;
-	handlerId : number;
-	
+	handlerId: number;
+
 	numberOfVertices: number;
 	numberOfElementsInMLineStyle: number;
 
@@ -32,17 +32,14 @@ function getValue(group: IGroup) {
 }
 
 function ReadMLineSegments(
-	scanner: DxfArrayScanner, 
+	scanner: DxfArrayScanner,
 	numberOfVertices: number,
 	numberStyleElements: number
-	) {
+) {
 
 	scanner.rewind();
-
-	//console.log('Number of vertices: ' + numberOfVertices);
-	let segments : Array<IMlineVertex> = [];
-	for(let i = 0; i < numberOfVertices; i++) {
-		//console.log('Current vertex: ' + i);
+	let segments: Array<IMlineVertex> = [];
+	for (let i = 0; i < numberOfVertices; i++) {
 		let point = {} as IPoint;
 		point.x = getValue(scanner.next()) as number;	// code 11
 		point.y = getValue(scanner.next()) as number;	// code 21
@@ -58,37 +55,29 @@ function ReadMLineSegments(
 		miter.y = getValue(scanner.next()) as number;	// code 23
 		miter.z = getValue(scanner.next()) as number;	// code 33
 
-		//console.log('NumberStyleElements: ' + numberStyleElements);
-		let distances : Array<Array<number>> = [];
-		for(let j = 0; j < numberStyleElements; j++){
+		let distances: Array<Array<number>> = [];
+		for (let j = 0; j < numberStyleElements; j++) {
 			// code 74
-			let _distances : Array<number> = [];
+			let _distances: Array<number> = [];
 			let current = scanner.next();
-			//console.log('iteration: ' + j);
-			//console.log('start code 74:');
 			if (current.code === 74) {
 				let numDistances = current.value as number;
-				for(let index : number = 0; index < numDistances; index++) {
+				for (let index: number = 0; index < numDistances; index++) {
 					let value = getValue(scanner.next());
 					_distances.push(value as number);
 				}
 			}
-			//console.log('end code 74;');
-			// code 75
 			current = scanner.next();
-			//console.log('start code 75:');
-			//console.log(current);
 			if (current.code === 75) {
 				// ignored
 				let numDistances = current.value as number;
-				for(let k = 0; k < numDistances; k++){
+				for (let k = 0; k < numDistances; k++) {
 					scanner.next();
 				}
 			}
-			//console.log('end code 75;');
 			distances.push(_distances)
 		}
-		let segment  = {} as IMlineVertex;
+		let segment = {} as IMlineVertex;
 		segment.position = point;
 		segment.direction = direction;
 		segment.offset = miter;
@@ -100,53 +89,53 @@ function ReadMLineSegments(
 	return segments;
 }
 
-export default class MLine implements IGeometry{
-	public ForEntityName= 'MLINE' as const;
+export default class MLine implements IGeometry {
+	public ForEntityName = 'MLINE' as const;
 	public parseEntity(scanner: DxfArrayScanner, curr: IGroup) {
-		const entity = { 
+		const entity = {
 			type: curr.value,
 			segments: [] as IMlineVertex[]
 		} as IMLineEntity;
 		curr = scanner.next();
-		while(!scanner.isEOF()) {
-				if(curr.code === 0) break;
+		while (!scanner.isEOF()) {
+			if (curr.code === 0) break;
 
-				switch(curr.code) {
-						case 2:
-								entity.styleName = curr.value as string;
-								break;
-						case 40:
-								entity.scale = curr.value as number;
-								break
-						case 70:
-								entity.justification = curr.value as number;
-								break
-						case 71:
-								entity.flags = curr.value as number;
-								break
-						case 72:
-								entity.numberOfVertices = curr.value as number;
-								break
-						case 73:
-								entity.numberOfElementsInMLineStyle = curr.value as number;
-								break
-						case 10:
-							break;
-						case 210:
-								entity.extrusionDirection = helpers.parsePoint(scanner);
-								break;
-						case 340:
-							entity.handlerId = curr.value as number;
-							break;
-						case 11:
-								entity.segments = ReadMLineSegments(scanner, entity.numberOfVertices, entity.numberOfElementsInMLineStyle);
-								break;
-						default:
-								helpers.checkCommonEntityProperties(entity, curr, scanner);
-								break;
-				}
-				
-				curr = scanner.next();
+			switch (curr.code) {
+				case 2:
+					entity.styleName = curr.value as string;
+					break;
+				case 40:
+					entity.scale = curr.value as number;
+					break
+				case 70:
+					entity.justification = curr.value as number;
+					break
+				case 71:
+					entity.flags = curr.value as number;
+					break
+				case 72:
+					entity.numberOfVertices = curr.value as number;
+					break
+				case 73:
+					entity.numberOfElementsInMLineStyle = curr.value as number;
+					break
+				case 10:
+					break;
+				case 210:
+					entity.extrusionDirection = helpers.parsePoint(scanner);
+					break;
+				case 340:
+					entity.handlerId = curr.value as number;
+					break;
+				case 11:
+					entity.segments = ReadMLineSegments(scanner, entity.numberOfVertices, entity.numberOfElementsInMLineStyle);
+					break;
+				default:
+					helpers.checkCommonEntityProperties(entity, curr, scanner);
+					break;
+			}
+
+			curr = scanner.next();
 		}
 		return entity;
 	}

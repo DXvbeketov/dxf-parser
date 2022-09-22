@@ -20,13 +20,13 @@ import Spline from './entities/spline.js';
 import Text from './entities/text.js';
 
 import MLine from './entities/mline.js';
-//import MLineStyle from './objects/mlinestyle.js';
 
 //import Vertex from './entities/.js';
 
 import log from 'loglevel';
 import IGeometry, { EntityName, IEntity, IPoint } from './entities/geomtry.js';
-import MLineStyle, { ObjectsName } from './objects/mlinestyle.js';
+import MLineStyle, { IMLineStyle } from './objects/mlinestyle.js';
+import IMethodObject, { IObject, IObjects, ObjectsName } from './objects/objects.js';
 
 //log.setLevel('trace');
 //log.setLevel('debug');
@@ -37,6 +37,8 @@ log.setLevel('info');
 
 export interface IBlock {
 	entities: IEntity[];
+	//todo objects;
+
 	type: number;
 	ownerHandle: string;
 	// entities: any[];
@@ -145,15 +147,11 @@ export interface ITables {
 
 export type ITable = IViewPortTable | ILayerTypesTable | ILayersTable;
 
-///TODO
-export interface IObject {
-	ForObjectName: ObjectsName;
-}
 
 export interface IDxf {
 	header: Record<string, IPoint | number>;
 	entities: IEntity[];
-	objects: IObject[];
+	objects: IObjects;
 	blocks: Record<string, IBlock>;
 	tables: ITables;
 }
@@ -186,7 +184,7 @@ function registerDefaultEntityHandlers(dxfParser: DxfParser) {
 
 export default class DxfParser {
 	private _entityHandlers = {} as Record<EntityName, IGeometry>;
-	private _objectHandlers = {} as Record<ObjectsName, IObject>;
+	private _objectHandlers = {} as Record<ObjectsName, IMethodObject>;
 
 	constructor() {
 		registerDefaultEntityHandlers(this);
@@ -207,7 +205,7 @@ export default class DxfParser {
 		this._entityHandlers[instance.ForEntityName] = instance;
 	}
 
-	public registerObjectHandler(handlerType: new() => IObject){
+	public registerObjectHandler(handlerType: new() => IMethodObject){
 		const instance = new handlerType();
 		this._objectHandlers[instance.ForObjectName] = instance;
 	}
@@ -254,6 +252,7 @@ export default class DxfParser {
 			while (!scanner.isEOF()) {
 				if (curr.code === 0 && curr.value === 'SECTION') {
 					curr = scanner.next();
+					console.log(curr.value);
 					// Be sure we are reading a section code
 					if (curr.code !== 2) {
 						console.error('Unexpected code %s after 0:SECTION', debugCode(curr));
@@ -273,8 +272,9 @@ export default class DxfParser {
 						dxf.entities = parseEntities(false);
 						log.debug('<');
 					} else if (curr.value === 'OBJECTS') {
-						log.debug('> ENTITIES');
-						//dxf.entities = parseEntities(false);
+						log.debug('> OBJECTS');
+						console.info('parse objects');
+						dxf.objects = parseObjects();
 						log.debug('<');
 					} else if (curr.value === 'TABLES') {
 						log.debug('> TABLES');
@@ -794,15 +794,40 @@ export default class DxfParser {
 		} as ITableDefinitions;
 
 		function parseObjects(){
-			const objects = [] as IObject[];
+			const objects = {
+				//mlinestyles : [] as Array<IMLineStyle>,
+				mlinestyles: {} as Record<string, IMLineStyle>,
+			} as IObjects;
+
+			const endingOnValue = 'ENDSEC';
+
 			while(true){
 				if (curr.code === 0) {
-					if (curr.value === '') {
+					if (curr.value === endingOnValue) {
 						break;
 					}
+
+					const handler = self._objectHandlers[curr.value as ObjectsName];
+					if (handler != null) {
+						log.debug(curr.value + ' {');
+						if (handler.ForObjectName === 'MLINESTYLE') {
+							let object : IMLineStyle = handler.parseObject(scanner, curr);
+							objects.mlinestyles[object.name!] = object;
+						}
+						curr = scanner.lastReadGroup!;
+						log.debug('}');
+					} else {
+						log.warn('Unhandled object: ' + curr.value);
+						curr = scanner.next();
+						continue;
+					}
+				} else {
+					// ignored lines from unsupported entity
+					curr = scanner.next();
 				}
-				const handler = self._objectsHandlers[curr.value as ObjectsName]
 			}
+			if (endingOnValue == 'ENDSEC') curr = scanner.next(); // swallow up ENDSEC, but not ENDBLK
+			return objects;
 		}
 
 		/**
@@ -880,7 +905,7 @@ export default class DxfParser {
 			return point;
 		}
 
-		function ensureHandle(entity: IEntity | IBlock) {
+		function ensureHandle(entity: IEntity | IBlock | IObject) {
 			if (!entity) throw new TypeError('entity cannot be undefined or null');
 
 			if (!entity.handle) entity.handle = lastHandle++;

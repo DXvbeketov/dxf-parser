@@ -1,43 +1,39 @@
-import { IObject } from 'src/DxfParser.js';
 import DxfArrayScanner, { IGroup } from '../DxfArrayScanner.js';
-
-export type ObjectsName = 'MLINESTYLE'
-
-;
+import IMethodObject, { IObject } from './objects.js';
 
 export interface IMLineStyle extends IObject {
     flags: number;
+    name: string;
     description: string;
     color: number;
     startAngle: number;
     endAngle: number;
-    elements: Array<IMLineStyleElement>;	//todo
+    mlineStyleElements: Array<IMLineStyleElement>;	//todo
 }
 
 export interface IMLineStyleElement {
     offset: number;
     color: number;
-    //lineType: ILineType;
+    lineTypeName: string;
 }
 
-export default class MLineStyle implements IObject {
+export default class MLineStyle implements IMethodObject {
     public ForObjectName = 'MLINESTYLE' as const;
 
-    public parseEntity(scanner: DxfArrayScanner, curr: IGroup) {
+    public parseObject(scanner: DxfArrayScanner, curr: IGroup) {
+
         const entity = {
-            elements: [] as Array<IMLineStyleElement>,
+            //type: curr.value,
+            mlineStyleElements: [] as Array<IMLineStyleElement>,
         } as IMLineStyle;
 
         curr = scanner.next();
-        console.info('MLINESTYLE {')
-        while (!scanner.isEOF()) {
-
-            curr = scanner.next();
-
-            console.info('code: ' + curr.code + '; value: ' + curr.value);
+        console.debug('MLINESTYLE {')
+        while (curr.code != 0) {
+            console.debug('code: ' + curr.code + '; value: ' + curr.value);
             switch (curr.code) {
                 case 2:
-                    //name = curr.value as string;
+                    entity.name = curr.value as string;
                     break;
                 case 3:
                     entity.description = curr.value as string;
@@ -62,20 +58,47 @@ export default class MLineStyle implements IObject {
                     entity.endAngle = endAngle;
                     break;
                 case 71:
-                    //entity.numElements = curr.value as number;
-
-                    // read mlinestylelement
-
+                    let numElements = curr.value as number;
+                    entity.mlineStyleElements = ReadMLineStylElements(scanner, numElements);
                     break;
                 case 1001:
-                    //ignored;
                     break;
                 default:
-                    console.info('code:' + curr.code + '; value' + curr.value);
-                    curr = scanner.next();
+                    break;
             }
-            console.info('}');
+            curr = scanner.next();
         }
+        console.debug('} END MLINESTYLE')
         return entity;
     }
+}
+
+function ReadMLineStylElements(scanner: DxfArrayScanner, numElements: number){
+    let elements: Array<IMLineStyleElement> = [];
+
+    console.debug('MLINESTYLEELEMENTS {');
+    for(let i = 0; i < numElements; i++){
+        let curr = scanner.next();
+        console.debug('ELEMENT [' + i + '] {');
+        let offset = curr.value as number; // code 49
+        curr = scanner.next();
+        console.debug('code: ' + curr.code + '; value: ' + curr.value);
+        let color = curr.value as number;
+        curr = scanner.next();
+        console.debug('code: ' + curr.code + '; value: ' + curr.value);
+        if (curr.code === 420) {
+            color = curr.value as number;
+            curr = scanner.next();
+        }
+        let linetypename = curr.value as string;
+        console.debug('code: ' + curr.code + '; value: ' + curr.value);
+        let element = {} as IMLineStyleElement;
+        element.color = color;
+        element.offset = offset;
+        element.lineTypeName = linetypename;
+        elements.push(element);
+        console.debug('} END ELEMENT');
+    }
+    console.debug('} END MLINESTYLEELEMENT');
+    return elements;
 }
