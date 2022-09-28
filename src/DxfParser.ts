@@ -5,6 +5,7 @@ import AUTO_CAD_COLOR_INDEX from './AutoCadColorIndex.js';
 import Face from './entities/3dface.js';
 import Arc from './entities/arc.js';
 import AttDef from './entities/attdef.js';
+import Attrib from './entities/attrib.js';
 import Circle from './entities/circle.js';
 import Dimension from './entities/dimension.js';
 import MLeader from './entities/mleader.js';
@@ -18,7 +19,6 @@ import Polyline from './entities/polyline.js';
 import Solid from './entities/solid.js';
 import Spline from './entities/spline.js';
 import Text from './entities/text.js';
-
 import MLine from './entities/mline.js';
 
 //import Vertex from './entities/.js';
@@ -165,6 +165,7 @@ function registerDefaultEntityHandlers(dxfParser: DxfParser) {
 	dxfParser.registerEntityHandler(Face);
 	dxfParser.registerEntityHandler(Arc);
 	dxfParser.registerEntityHandler(AttDef);
+	dxfParser.registerEntityHandler(Attrib);
 	dxfParser.registerEntityHandler(Circle);
 	dxfParser.registerEntityHandler(Dimension);
 	dxfParser.registerEntityHandler(MLeader);
