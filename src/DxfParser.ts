@@ -253,7 +253,6 @@ export default class DxfParser {
 			while (!scanner.isEOF()) {
 				if (curr.code === 0 && curr.value === 'SECTION') {
 					curr = scanner.next();
-					console.log(curr.value);
 					// Be sure we are reading a section code
 					if (curr.code !== 2) {
 						console.error('Unexpected code %s after 0:SECTION', debugCode(curr));
@@ -274,7 +273,6 @@ export default class DxfParser {
 						log.debug('<');
 					} else if (curr.value === 'OBJECTS') {
 						log.debug('> OBJECTS');
-						console.info('parse objects');
 						dxf.objects = parseObjects();
 						log.debug('<');
 					} else if (curr.value === 'TABLES') {

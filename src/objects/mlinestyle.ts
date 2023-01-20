@@ -28,9 +28,7 @@ export default class MLineStyle implements IMethodObject {
         } as IMLineStyle;
 
         curr = scanner.next();
-        console.debug('MLINESTYLE {')
         while (curr.code != 0) {
-            console.debug('code: ' + curr.code + '; value: ' + curr.value);
             switch (curr.code) {
                 case 2:
                     entity.name = curr.value as string;
@@ -68,37 +66,28 @@ export default class MLineStyle implements IMethodObject {
             }
             curr = scanner.next();
         }
-        console.debug('} END MLINESTYLE')
         return entity;
     }
 }
 
 function ReadMLineStylElements(scanner: DxfArrayScanner, numElements: number){
     let elements: Array<IMLineStyleElement> = [];
-
-    console.debug('MLINESTYLEELEMENTS {');
     for(let i = 0; i < numElements; i++){
         let curr = scanner.next();
-        console.debug('ELEMENT [' + i + '] {');
         let offset = curr.value as number; // code 49
         curr = scanner.next();
-        console.debug('code: ' + curr.code + '; value: ' + curr.value);
         let color = curr.value as number;
         curr = scanner.next();
-        console.debug('code: ' + curr.code + '; value: ' + curr.value);
         if (curr.code === 420) {
             color = curr.value as number;
             curr = scanner.next();
         }
         let linetypename = curr.value as string;
-        console.debug('code: ' + curr.code + '; value: ' + curr.value);
         let element = {} as IMLineStyleElement;
         element.color = color;
         element.offset = offset;
         element.lineTypeName = linetypename;
         elements.push(element);
-        console.debug('} END ELEMENT');
     }
-    console.debug('} END MLINESTYLEELEMENT');
     return elements;
 }

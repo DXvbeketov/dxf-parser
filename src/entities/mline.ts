@@ -27,7 +27,6 @@ export interface IMlineVertex {
 
 
 function getValue(group: IGroup) {
-	//console.log('code: ' + group.code + '; value: ' + group.value);
 	return group.value;
 }
 
