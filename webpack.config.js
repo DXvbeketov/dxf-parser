@@ -1,10 +1,11 @@
 import { resolve, dirname } from 'path';
+import { fileURLToPath } from 'url';
 
 export default {
 	entry: './esm/index.js',
 	output: {
 		filename: 'index.js',
-		path: 'C:\\Users\\work\\Desktop\\work\\dxf-parser\\commonjs',
+	 path: resolve(dirname(fileURLToPath(import.meta.url)), 'dist/src'),
 		library: {
 			name: 'DxfParser',
 			type: 'umd',

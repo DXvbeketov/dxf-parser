@@ -1,7 +1,7 @@
 {
-	"name": "dxf-parser",
-	"version": "1.1.2",
-	"description": "Parse dxf files into a readable, logical js object.",
+	"name": "ted.dxf.parser",
+	"version": "1.0.0",
+	"description": "ted-dxf-parser",
 	"type": "module",
 	"main": "./commonjs/index.js",
 	"module": "./esm/index.js",
@@ -16,24 +16,11 @@
 		"prod": "tsc && webpack --mode production",
 		"prepublishOnly": "npm run prod"
 	},
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/gdsestimating/dxf-parser.git"
-	},
-	"bugs": {
-		"url": "https://github.com/gdsestimating/dxf-parser/issues",
-		"email": "bzuillsmith@gmail.com"
-	},
-	"homepage": "https://github.com/gdsestimating/dxf-parser",
-	"author": "GDS Storefront Estimating (gdsestimating.com)",
-	"contributors": [
-		"Ben Zuill-Smith <bzuillsmith@gmail.com>"
-	],
-	"license": "MIT",
 	"devDependencies": {
 		"@babel/core": "^7.10.4",
 		"@babel/preset-env": "^7.10.4",
 		"@babel/register": "^7.10.4",
+		"@types/node": "^18.11.18",
 		"approvals": "^3.0.5",
 		"mocha": "^8.0.1",
 		"should": "^13.2.3",
@@ -43,16 +30,5 @@
 	},
 	"dependencies": {
 		"loglevel": "^1.7.1"
-	},
-	"keywords": [
-		"dxf",
-		"cad",
-		"parser",
-		"reader"
-	],
-	"files": [
-		"commonjs",
-		"esm",
-		"src"
-	]
+	}
 }
