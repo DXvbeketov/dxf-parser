@@ -1,4 +1,4 @@
-import DxfArrayScanner, { IGroup } from "src/DxfArrayScanner";
+import DxfArrayScanner, { IGroup } from "src/core/DxfArrayScanner";
 import { IMLineStyle } from "./mlinestyle";
 
 export type ObjectsName = 'MLINESTYLE';

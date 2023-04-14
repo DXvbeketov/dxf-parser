@@ -1,6 +1,6 @@
-import AUTO_CAD_COLOR_INDEX from './AutoCadColorIndex.js';
-import DxfArrayScanner, { IGroup } from './DxfArrayScanner.js';
-import { IEntity, IPoint } from './entities/geomtry.js';
+import AUTO_CAD_COLOR_INDEX from './AutoCadColorIndex';
+import DxfArrayScanner, { IGroup } from './DxfArrayScanner';
+import { IEntity, IPoint } from './entities/geomtry';
 
 /**
  * Returns the truecolor value of the given AutoCad color index value
@@ -13,7 +13,7 @@ export function getAcadColor(index: number) {
 /**
  * Parses the 2D or 3D coordinate, vector, or point. When complete,
  * the scanner remains on the last group of the coordinate.
- * @param {*} scanner 
+ * @param {*} scanner
  */
 export function parsePoint(scanner: DxfArrayScanner) {
 	const point = {} as IPoint;
@@ -48,7 +48,7 @@ export function parsePoint(scanner: DxfArrayScanner) {
 /**
  * Parses 16 numbers as an array. When complete,
  * the scanner remains on the last group of the value.
- * @param {*} scanner 
+ * @param {*} scanner
  * @param {*} groupCode
  */
  export function parseMatrix(scanner: DxfArrayScanner, groupCode: number) {
@@ -62,7 +62,7 @@ export function parsePoint(scanner: DxfArrayScanner) {
 			throw new Error('Expected code for matrix value to be ' + groupCode +
 				' but got ' + curr.code + '.');
 		}
-		
+
 		matrix.push(curr.value as number);
 	}
 	return matrix;
@@ -71,7 +71,7 @@ export function parsePoint(scanner: DxfArrayScanner) {
 /**
  * Attempts to parse codes common to all entities. Returns true if the group
  * was handled by this function.
- * @param {*} entity - the entity currently being parsed 
+ * @param {*} entity - the entity currently being parsed
  * @param {*} curr - the current group being parsed
  */
 export function checkCommonEntityProperties(entity: IEntity, curr:IGroup, scanner:DxfArrayScanner) {

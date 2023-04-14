@@ -1,0 +1,11 @@
+{
+  "name": "@DEAXO-GmbH/ted-dxf-parser",
+  "version": "1.0.4",
+  "dependencies": {
+    "loglevel": "^1.7.1"
+  },
+  "repository": "github.com:DEAXO-GmbH/TED.dxf.parser.git",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  }
+}

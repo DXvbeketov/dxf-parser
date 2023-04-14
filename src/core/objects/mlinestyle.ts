@@ -1,5 +1,5 @@
-import DxfArrayScanner, { IGroup } from '../DxfArrayScanner.js';
-import IMethodObject, { IObject } from './objects.js';
+import DxfArrayScanner, { IGroup } from '../DxfArrayScanner';
+import IMethodObject, { IObject } from './objects';
 
 export interface IMLineStyle extends IObject {
     flags: number;

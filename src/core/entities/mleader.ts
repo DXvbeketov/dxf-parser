@@ -1,6 +1,6 @@
-import DxfArrayScanner, { IGroup } from "../DxfArrayScanner.js";
-import * as helpers from "../ParseHelpers.js";
-import IGeometry, { IEntity, IPoint } from "./geomtry.js";
+import DxfArrayScanner, { IGroup } from "../DxfArrayScanner";
+import * as helpers from "../ParseHelpers";
+import IGeometry, { IEntity, IPoint } from "./geomtry";
 
 // Helpful doc at https://atlight.github.io/formats/dxf-leader.html
 // Codes at https://images.autodesk.com/adsk/files/autocad_2012_pdf_dxf-reference_enu.pdf

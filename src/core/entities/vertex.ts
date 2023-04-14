@@ -1,6 +1,6 @@
-import DxfArrayScanner, { IGroup } from '../DxfArrayScanner.js';
-import * as helpers from '../ParseHelpers.js';
-import IGeometry, { IEntity, IPoint } from './geomtry.js';
+import DxfArrayScanner, { IGroup } from '../DxfArrayScanner';
+import * as helpers from '../ParseHelpers';
+import IGeometry, { IEntity, IPoint } from './geomtry';
 
 export interface IVertexEntity extends IEntity, IPoint{
 	bulge: number;
@@ -69,7 +69,7 @@ export default class Vertex implements IGeometry {
 								helpers.checkCommonEntityProperties(entity, curr, scanner);
 								break;
 				}
-				
+
 				curr = scanner.next();
 		}
 		return entity;

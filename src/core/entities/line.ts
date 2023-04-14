@@ -1,6 +1,6 @@
-import DxfArrayScanner, { IGroup } from '../DxfArrayScanner.js';
-import * as helpers from '../ParseHelpers.js';
-import IGeometry, { IEntity, IPoint } from './geomtry.js';
+import DxfArrayScanner, { IGroup } from '../DxfArrayScanner';
+import * as helpers from '../ParseHelpers';
+import IGeometry, { IEntity, IPoint } from './geomtry';
 
 export interface ILineEntity extends IEntity{
 	vertices: IPoint[];
@@ -31,7 +31,7 @@ export default class Line implements IGeometry{
 								helpers.checkCommonEntityProperties(entity, curr, scanner);
 								break;
 				}
-				
+
 				curr = scanner.next();
 		}
 		return entity;

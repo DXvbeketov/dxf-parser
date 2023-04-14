@@ -6,7 +6,7 @@
 	"compileOnSave": false,
 	"compilerOptions": {
 		"rootDir": "./src",
-		"outDir": "./esm/",
+		"outDir": "./dist/",
 		"module": "es2015",
 		"target": "esnext",
 		"jsx": "react",

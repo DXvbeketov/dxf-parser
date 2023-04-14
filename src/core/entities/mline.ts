@@ -1,6 +1,6 @@
-import * as helpers from '../ParseHelpers.js';
-import IGeometry, { IEntity, IPoint } from './geomtry.js';
-import DxfArrayScanner, { IGroup } from '../DxfArrayScanner.js';
+import * as helpers from '../ParseHelpers';
+import IGeometry, { IEntity, IPoint } from './geomtry';
+import DxfArrayScanner, { IGroup } from '../DxfArrayScanner';
 
 export interface IMLineEntity extends IEntity {
 	styleName: string;

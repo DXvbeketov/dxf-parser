@@ -1,6 +1,6 @@
-import DxfArrayScanner, { IGroup } from '../DxfArrayScanner.js';
-import * as helpers from '../ParseHelpers.js';
-import IGeometry, { IEntity, IPoint } from './geomtry.js';
+import DxfArrayScanner, { IGroup } from '../DxfArrayScanner';
+import * as helpers from '../ParseHelpers';
+import IGeometry, { IEntity, IPoint } from './geomtry';
 
 export interface IVertex extends IPoint{
 	startWidth: number;

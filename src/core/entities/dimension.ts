@@ -1,6 +1,6 @@
-import DxfArrayScanner, { IGroup } from '../DxfArrayScanner.js';
-import * as helpers from '../ParseHelpers.js';
-import IGeometry, { IEntity, IPoint } from './geomtry.js';
+import DxfArrayScanner, { IGroup } from '../DxfArrayScanner';
+import * as helpers from '../ParseHelpers';
+import IGeometry, { IEntity, IPoint } from './geomtry';
 
 export interface IDimensionEntity extends IEntity{
 	block: string;
@@ -39,10 +39,10 @@ export default class Dimension implements IGeometry {
 				case 12: // Insertion point for clones of a dimension
 					entity.insertionPoint = helpers.parsePoint(scanner);
 					break;
-				case 13: // Definition point for linear and angular dimensions 
+				case 13: // Definition point for linear and angular dimensions
 					entity.linearOrAngularPoint1 = helpers.parsePoint(scanner);
 					break;
-				case 14: // Definition point for linear and angular dimensions 
+				case 14: // Definition point for linear and angular dimensions
 					entity.linearOrAngularPoint2 = helpers.parsePoint(scanner);
 					break;
 				case 15: // Definition point for diameter, radius, and angular dimensions

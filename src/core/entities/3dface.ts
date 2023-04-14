@@ -1,6 +1,6 @@
-import DxfArrayScanner, { IGroup } from '../DxfArrayScanner.js';
-import * as helpers from '../ParseHelpers.js';
-import IGeometry, { IEntity, IPoint } from './geomtry.js';
+import DxfArrayScanner, { IGroup } from '../DxfArrayScanner';
+import * as helpers from '../ParseHelpers';
+import IGeometry, { IEntity, IPoint } from './geomtry';
 
 export interface I3DfaceEntity extends IEntity {
 	shape: boolean;
@@ -70,7 +70,7 @@ function parse3dFaceVertices(scanner:DxfArrayScanner, curr:IGroup) {
 					vertex.z = curr.value as number;
 					break;
 				default:
-					// it is possible to have entity codes after the vertices.  
+					// it is possible to have entity codes after the vertices.
 					// So if code is not accounted for return to entity parser where it might be accounted for
 					return vertices;
 			}

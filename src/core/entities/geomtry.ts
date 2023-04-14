@@ -1,4 +1,4 @@
-import DxfArrayScanner, { IGroup } from "../DxfArrayScanner.js";
+import DxfArrayScanner, { IGroup } from "../DxfArrayScanner";
 
 export interface IPoint {
 	x: number;
