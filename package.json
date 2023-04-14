@@ -12,8 +12,9 @@
 	"types": "./esm/index.d.ts",
 	"scripts": {
 		"test": "mocha --require @babel/register test",
-		"dev": "tsc -w & webpack --mode development",
-		"prod": "tsc && webpack --mode production && cd esm && tsc",
+		"dev": "tsc -w",
+		"prod": "tsc && cd esm && tsc",
+		"obsolateProdWithWebpack": "tsc && webpack --mode production && cd esm && tsc",
 		"prepublishOnly": "npm run prod"
 	},
 	"devDependencies": {
