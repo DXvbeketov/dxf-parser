@@ -5,11 +5,11 @@ export default {
 	entry: './esm/index.js',
 	output: {
 		filename: 'index.js',
-	 path: resolve(dirname(fileURLToPath(import.meta.url)), 'dist/src'),
+	 path: resolve(dirname(fileURLToPath(import.meta.url)), 'dist'),
 		library: {
-			name: 'DxfParser',
+			name: 'ted-dxf-parser',
 			type: 'umd',
-			export: 'DxfParser'
+			export: 'ted-dxf-parser'
 		},
 		globalObject: 'typeof self !== \'undefined\' ? self : this'
 	}
